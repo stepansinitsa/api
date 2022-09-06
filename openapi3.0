@@ -1,0 +1,381 @@
+openapi: 3.0.3
+info:
+  title: Онлайн приложение OpenAPI спецификации
+  description: DEV_SERVER
+  contact:
+    name: Stepan Sinitsa
+    email: stepansinitsa@mail.com
+  version: 0.0.1
+servers:
+  - url: https://virtserver.swaggerhub.com/Sinitsa/dev server/0.0.1
+    description: SwaggerHub API
+security:
+  - JWT: []
+tags:
+  - name: Access
+    description: Получение доступа для редактирования документов
+    externalDocs:
+      description: Документация JWT
+      url: https://jwt.io/
+paths:
+  /auth:
+    post:
+      tags:
+        - Authorization
+      summary: Получение доступа
+      description: Аутентификация прошла успешно, возвращается JWT
+      requestBody:
+        $ref: '#/components/requestBodies/VeiwParams'
+      responses:
+        '200':
+          description: Аутентификация прошла успешно, возвращается JWT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        '401':
+          description: Ошибка в запросе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+      security: []
+  /documents:
+    get:
+      summary: Получение списка документов
+      tags:
+        - Documents
+      operationId: getAllDoc
+      responses:
+        '200':
+          description: Успешный ответ со списком документов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Documents'
+        '400':
+          description: Любая ошибка, кроме доступа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Ошибка доступа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+    post:
+      summary: Создание документа
+      tags:
+        - Documents
+      operationId: createDoc
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Document'
+      responses:
+        '200':
+          description: Успешный ответ с созданным документом
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Documents'
+        '400':
+          description: Любая ошибка, кроме доступа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Ошибка доступа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+  /documents/{doc_id}:
+    get:
+      summary: Запрос документа по идентификатору
+      tags:
+        - Document
+      operationId: getDocById
+      parameters:
+        - name: doc_id
+          in: path
+          required: true
+          description: Идентификатор документа
+          schema:
+            type: string
+          example: 23as34gyf
+      responses:
+        '200':
+          description: Успешный ответ с одним документом
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: Любая ошибка, кроме доступа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Ошибка доступа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+      security:
+        - JWT:
+            - doc:admin        
+    patch:
+      summary: Редактирование(обновление) документа по идентификатору
+      tags:
+        - Document
+      operationId: updateDocById
+      parameters:
+        - name: doc_id
+          in: path
+          required: true
+          description: Идентификатор документа
+          schema:
+            type: string
+          example: 23as34gyf
+      responses:
+        '200':
+          description: Документ успешно отредактирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: Любая ошибка, кроме доступа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Ошибка доступа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+      security:
+        - JWT:
+            - doc:admin        
+    delete:
+      summary: Удаление документа по идентификатору
+      tags:
+        - Document
+      operationId: deleteDoc
+      parameters:
+        - name: doc_id
+          in: path
+          required: true
+          description: Идентификатор документа
+          schema:
+            type: string
+          example: 23as34gyf
+      responses:
+        '200':
+          description: Успешное удаление документа
+          content:
+            application/json: {}
+        '400':
+          description: Любая ошибка, кроме доступа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Ошибка доступа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+      security:
+        - JWT:
+            - doc:admin              
+  /users/{user_id}:
+    get:
+      summary: Получение информации о пользователе
+      tags:
+        - User
+      operationId: getUserById
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: Идентификатор пользователя
+          schema:
+            type: string
+          example: 23as34gyf
+      responses:
+        '200':
+          description: Успешный ответ с информацией о пользователе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Любая ошибка, кроме доступа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Ошибка доступа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+      security:
+        - JWT:
+            - doc:admin        
+components:
+  schemas:
+    '200':
+      type: object
+      description: Объект с данными
+    '400':
+      type: object
+      properties:
+        name:
+          type: string
+          description: >
+            Имена ошибок записываются в словарь.
+        message:
+          type: string
+        params:
+          type: object
+      description: >-
+        Ответ описывает имя ошибки и параметры возникновения ошибки
+    Document:
+      type: object
+      required:
+        - name
+        - body
+        - status
+      properties:
+        doc_id:
+          type: string
+          example: 23as34gyf
+        name:
+          type: string
+          example: Имя документа
+        body:
+          type: string
+          example: Состав документа
+        status:
+          type: string
+          enum:
+            - for all
+            - read-only
+            - only me
+          description: Уровень доступа к документу
+        created_at:
+          type: string
+          format: 2022-09-05T11:00:00.000Z
+    Documents:
+      type: array
+      items:
+        $ref: '#/components/schemas/Documents'
+    User:
+      type: object
+      required:
+      - name
+      - surname
+      - email
+      - role
+      properties:
+        user_id:
+          type: string
+          example: 9237182
+        name:
+          type: string
+          example: имя пользователя
+        surname:
+          type: string
+          example: фамилия пользователя
+        email:
+          type: string
+          example: эл. адрес пользователя
+        role:
+          type: string
+          enum:
+            - admin
+            - user
+          description: Роль пользователя
+        created_at:
+          type: string
+          format: 2022-09-05T11:00:00.000Z
+    Users:
+      type: array
+      items:
+        $ref: '#/components/schemas/Users'
+    VeiwParams:
+      required:
+        - sign
+      type: object
+      properties:
+        sign:
+          type: string
+      description: >
+        Объект с параметрами из query string. Всё, что начинается с
+        префикса `doc_` и подпись `sign`.
+      example:
+        doc_access_token_settings: ''
+        doc_id: '7966403'
+        doc_user_id: '0'
+        doc_viewer_group_role: admin
+        sign: EDGIdg_dogso34_enweQ
+    inline_response_200:
+      allOf:
+        - $ref: '#/components/schemas/200'
+        - properties:
+            token:
+              type: string
+  responses:
+    '400':
+      description: Любая ошибка, кроме доступа
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/400'
+    '401':
+      description: Ошибка авторизации
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/400'
+    object:
+      description: Объект с данными
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/200'
+  requestBodies:
+    Document:
+      description: Объект документа
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Document'
+      required: true
+    VeiwParams:
+      description: Должен содержать все параметры с перфиксом `doc_'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/VeiwParams'
+      required: true
+  securitySchemes:
+    JWT:
+      type: http
+      description: |
+        Документация JWT: [https://jwt.io/](https://jwt.io/)
+      scheme: bearer
+      bearerFormat: JWT
